@@ -1,0 +1,95 @@
+---
+title: "TidyVerse CREATE assignment"
+author: "Mohammed Rahman"
+date: "2024-03-20"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Description
+
+In this assignment, you’ll practice collaborating around a code project with GitHub.  You could consider our collective work as building out a book of examples on how to use TidyVerse functions.
+
+GitHub repository: https://github.com/pkowalchuk/SPRING2024TIDYVERSE
+
+[FiveThirtyEight.com datasets.](https://data.fivethirtyeight.com/)
+
+[Kaggle datasets.](https://www.kaggle.com/datasets)
+
+Your task here is to Create an Example.  Using one or more TidyVerse packages, and any dataset from fivethirtyeight.com or Kaggle, create a programming sample “vignette” that demonstrates how to use one or more of the capabilities of the selected TidyVerse package with your selected dataset.
+
+## Data
+
+The dataset I chose for this assignment from FiveThirtyEight.com and the article is "We Watched 906 Foul Balls To Find Out Where The Most Dangerous Ones Land". Here is the link of the data: https://fivethirtyeight.com/features/we-watched-906-foul-balls-to-find-out-where-the-most-dangerous-ones-land/
+
+The data I downloaded from: https://github.com/fivethirtyeight/data/blob/master/foul-balls/foul-balls.csv
+
+```{r message = FALSE, warning=FALSE, echo = FALSE}
+#Loading libraries
+library(dplyr)
+library(tidyverse)
+```
+
+
+```{r}
+foul_balls<-read.csv("foul-balls.csv")
+
+# Summary of the data
+summary(foul_balls)
+
+#Display the dataset
+head(foul_balls)
+```
+
+### Renaming Data Columns
+
+```{r}
+names(foul_balls)<-c("MatchUP", "Game_Date", "Type_of_Hit", "Exit_Velocity", "Predicted_Zone", "Camera_Zone", "Used_Zone")
+
+colnames(foul_balls)
+```
+
+### Filtering Data
+
+I am filtering the data to the outermost predicted zone and comparing it to the exit velocity.
+
+```{r}
+foul_balls %>%
+    filter(Predicted_Zone=="7"|Predicted_Zone=="6")
+```
+
+### Arranging Data
+
+Since this is a large data set, I wanted to take a look at the top 20 highest exit velocities. 
+
+```{r}
+foul_balls %>%
+    arrange(desc(Exit_Velocity))%>%
+    head(20)
+```
+
+
+### Summerise
+
+I used the summarize function from dplyr to generate some statistics for the exit velocity. 
+
+```{r}
+foul_info <- na.omit(foul_balls)
+
+foul_sum <- group_by(foul_info, Type_of_Hit)
+```
+
+Summarising minimum, maximum, median, and mean of the "Exit_Velocity".
+
+```{r}
+foul_sum <- summarise(foul_sum,Min=min(Exit_Velocity),Max = max(Exit_Velocity),
+                      Median=median(Exit_Velocity), Mean=round(mean(Exit_Velocity),1))
+foul_sum<-as.data.frame(foul_sum)
+
+foul_sum
+```
